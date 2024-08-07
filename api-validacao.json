@@ -1,0 +1,365 @@
+{
+	"info": {
+		"_postman_id": "6b99e618-3b97-4c49-a7c0-4c906bb5dd36",
+		"name": "Validações Api",
+		"description": "Definição de Apis para o ms Validacões",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2324728"
+	},
+	"item": [
+		{
+			"name": "v1",
+			"item": [
+				{
+					"name": "motoristas",
+					"item": [
+						{
+							"name": "cria motorista",
+							"item": [
+								{
+									"name": "Erro ao salvar Motorista",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var erros = [\r",
+													"  'Motorista tem que ter idade menor do que 75 anos',\r",
+													"   'Nome do motorista não pode vazio',\r",
+													"    'Placa do caminhão naõ pode ser vazia'\r",
+													"]\r",
+													"\r",
+													"pm.test(\"Retornou erro de valição\", function () {\r",
+													"    pm.response.to.have.status(422);\r",
+													"});\r",
+													"pm.test(\"Valida erros retornados\", function () {\r",
+													"    var errosRecebidos = pm.response.json();\r",
+													"    errosRecebidos.sort()\r",
+													"    console.log(errosRecebidos)\r",
+													"    for (let i = 0; i < erros.length; i++) {\r",
+													"        pm.expect(errosRecebidos[i]).to.eql(erros[i]);\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "*/*"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"nome\": \"\",\n  \"placaCaminhao\": \"\",\n  \"idade\": 90,\n  \"filhos\": [\n    \"\"\n  ]\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/v1/motoristas",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v1",
+												"motoristas"
+											]
+										},
+										"description": "Operação para salvar o motorista"
+									},
+									"response": []
+								},
+								{
+									"name": "salva Motorista com sucesso",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"\r",
+													"pm.test(\"Salvo com sucesso retornou 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Teste dos campos de retorno\", function () {\r",
+													"    var jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData.nome).to.eql(pm.variables.get(\"nomeCaminhao\"));\r",
+													"    pm.expect(jsonData.idade).to.eql(pm.variables.get(\"idade\"));\r",
+													"    pm.expect(jsonData.placaCaminhao).to.eql(pm.variables.get(\"placaCaminhao\"));\r",
+													"    pm.expect(jsonData.filhos.length).to.eql(1);\r",
+													"    pm.expect(jsonData.filhos[0]).to.eql(pm.variables.get(\"filho\"));    \r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const min = 18;\r",
+													"const max = 55;\r",
+													"const idade = Math.floor(Math.random() * (max - min)) + min;\r",
+													"var nomes = [\"joão\", \"zezinho\", \"zequinha\"]\r",
+													"var filhos = [\"maria\", \"ana\", \"vitor\",\"hugo\"]\r",
+													"const placasDeCaminhao = [\r",
+													"    \"ABC1D23\",    \"EFG4H56\",    \"IJK7L89\",    \"MNO0P12\",    \"QRS3T45\",    \"UVW6X78\",    \"YZA9B01\",    \"CDE2F34\",\r",
+													"    \"GHI5J67\",    \"KLM8N90\"];\r",
+													"const randomNome = Math.floor(Math.random() * 3);\r",
+													"const randomFilho = Math.floor(Math.random() * 4);\r",
+													"const randomPlaca = Math.floor(Math.random() * 10);\r",
+													"pm.globals.set(\"nomeCaminhao\", nomes[randomNome]);\r",
+													"pm.globals.set(\"placaCaminhao\", placasDeCaminhao[randomPlaca]);\r",
+													"pm.globals.set(\"idade\", idade);\r",
+													"pm.globals.set(\"filho\", filhos[randomFilho]);\r",
+													"\r",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "*/*"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"nome\": \"{{nomeCaminhao}}\",\n  \"placaCaminhao\": \"{{placaCaminhao}}\",\n  \"idade\": {{idade}},\n  \"filhos\": [\n    \"{{filho}}\"\n  ]\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/v1/motoristas",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v1",
+												"motoristas"
+											]
+										},
+										"description": "Operação para salvar o motorista"
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "{id}",
+							"item": [
+								{
+									"name": "salva Motorista com sucesso Copy",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const min = 18;\r",
+													"const max = 55;\r",
+													"const idade = Math.floor(Math.random() * (max - min)) + min;\r",
+													"var nomes = [\"joão\", \"zezinho\", \"zequinha\"]\r",
+													"var filhos = [\"maria\", \"ana\", \"vitor\",\"hugo\"]\r",
+													"const placasDeCaminhao = [\r",
+													"    \"ABC1D23\",    \"EFG4H56\",    \"IJK7L89\",    \"MNO0P12\",    \"QRS3T45\",    \"UVW6X78\",    \"YZA9B01\",    \"CDE2F34\",\r",
+													"    \"GHI5J67\",    \"KLM8N90\"];\r",
+													"const randomNome = Math.floor(Math.random() * 3);\r",
+													"const randomFilho = Math.floor(Math.random() * 4);\r",
+													"const randomPlaca = Math.floor(Math.random() * 10);\r",
+													"pm.globals.set(\"nomeCaminhaoPut\", nomes[randomNome]);\r",
+													"pm.globals.set(\"placaCaminhaoPut\", placasDeCaminhao[randomPlaca]);\r",
+													"pm.globals.set(\"idadePut\", idade);\r",
+													"pm.globals.set(\"filhoPut\", filhos[randomFilho]);\r",
+													"\r",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Retornou sucesso na atualização\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"pm.test(\"Teste dos campos de retorno\", function () {\r",
+													"    var jsonData = pm.response.json();\r",
+													"    pm.expect(jsonData.nome).to.eql(pm.variables.get(\"nomeCaminhaoPut\"));\r",
+													"    pm.expect(jsonData.idade).to.eql(pm.variables.get(\"idadePut\"));\r",
+													"    pm.expect(jsonData.placaCaminhao).to.eql(pm.variables.get(\"placaCaminhaoPut\"));\r",
+													"    pm.expect(jsonData.filhos.length).to.eql(1);\r",
+													"    pm.expect(jsonData.filhos[0]).to.eql(pm.variables.get(\"filhoPut\"));    \r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "*/*"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"nome\": \"{{nomeCaminhaoPut}}\",\n  \"placaCaminhao\": \"{{placaCaminhaoPut}}\",\n  \"idade\": {{idadePut}},\n  \"filhos\": [\n    \"{{filhoPut}}\"\n  ]\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/v1/motoristas/42",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v1",
+												"motoristas",
+												"42"
+											]
+										},
+										"description": "Operação para salvar o motorista"
+									},
+									"response": []
+								},
+								{
+									"name": "Erro ao salvar Motorista Copy",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var erros = [\r",
+													"  'Motorista tem que ter idade menor do que 75 anos',\r",
+													"   'Nome do motorista não pode vazio',\r",
+													"    'Placa do caminhão naõ pode ser vazia'\r",
+													"]\r",
+													"\r",
+													"pm.test(\"Retornou erro de valição\", function () {\r",
+													"    pm.response.to.have.status(422);\r",
+													"});\r",
+													"pm.test(\"Valida erros retornados\", function () {\r",
+													"    var errosRecebidos = pm.response.json();\r",
+													"    errosRecebidos.sort()\r",
+													"    console.log(errosRecebidos)\r",
+													"    for (let i = 0; i < erros.length; i++) {\r",
+													"        pm.expect(errosRecebidos[i]).to.eql(erros[i]);\r",
+													"    }\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "*/*"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"nome\": \"\",\n  \"placaCaminhao\": \"\",\n  \"idade\": 90,\n  \"filhos\": [\n    \"\"\n  ]\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/v1/motoristas/42",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"v1",
+												"motoristas",
+												"42"
+											]
+										},
+										"description": "Operação para salvar o motorista"
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080"
+		}
+	]
+}
